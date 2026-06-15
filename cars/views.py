@@ -101,8 +101,6 @@ def login_view(request):
                 return redirect('login')
             
             login(request, user)
-            if dealer_profile and dealer_profile.must_change_password:
-                return redirect('password_change')
             return redirect('dealer_dashboard')
         else:
             messages.error(request, 'Invalid credentials.')
