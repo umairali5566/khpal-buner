@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Dealers - Khpal Buner{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="mb-4">Verified Dealers</h2>
+    
+    <div class="row g-4">
+        {% for dealer in dealers %}
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    {% if dealer.profile_picture %}
+                    <img src="{{ dealer.profile_picture.url }}" alt="{{ dealer.shop_name }}" class="rounded-circle object-fit-cover mb-3" style="width: 88px; height: 88px;">
+                    {% else %}
+                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mb-3" style="width: 88px; height: 88px;">
+                        <i class="fas fa-store text-muted fa-2x"></i>
+                    </div>
+                    {% endif %}
+                    <h5 class="card-title">{{ dealer.shop_name }}</h5>
+                    <p class="card-text">{{ dealer.owner_name }}</p>
+                    <p class="card-text small text-muted">{{ dealer.address }}</p>
+                    <p class="card-text small">{{ dealer.city.name }}</p>
+                    <p class="card-text"><i class="fas fa-car"></i> {{ dealer.cars.all|length }} Cars</p>
+                </div>
+                <div class="card-footer">
+                    <a href="{{ dealer.get_absolute_url }}" class="btn btn-primary btn-sm">View Profile</a>
+                    {% if dealer.whatsapp %}
+                    <a href="https://wa.me/{{ dealer.whatsapp }}" class="btn btn-success btn-sm"><i class="fab fa-whatsapp"></i></a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p>No dealers found.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}{% if car %}Edit Car{% else %}Add Car{% endif %} - Khpal Buner{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="mb-4">{% if car %}Edit Car{% else %}Add New Car{% endif %}</h2>
+    
+    <form method="post" enctype="multipart/form-data" class="row g-3">
+        {% csrf_token %}
+        <div class="col-md-6">{{ car_form.brand.label_tag }} {{ car_form.brand }}</div>
+        <div class="col-md-6">{{ car_form.model.label_tag }} {{ car_form.model }}</div>
+        <div class="col-md-4">{{ car_form.year.label_tag }} {{ car_form.year }}</div>
+        <div class="col-md-4">{{ car_form.color.label_tag }} {{ car_form.color }}</div>
+        <div class="col-md-4">{{ car_form.price.label_tag }} {{ car_form.price }}</div>
+        <div class="col-md-6">{{ car_form.mileage.label_tag }} {{ car_form.mileage }}</div>
+        <div class="col-md-6">{{ car_form.city.label_tag }} {{ car_form.city }}</div>
+        <div class="col-md-6">{{ car_form.fuel_type.label_tag }} {{ car_form.fuel_type }}</div>
+        <div class="col-md-6">{{ car_form.transmission.label_tag }} {{ car_form.transmission }}</div>
+        <div class="col-12">{{ car_form.description.label_tag }} {{ car_form.description }}</div>
+
+        {% if car and car.images.exists %}
+        <div class="col-12">
+            <label class="form-label">Current Images</label>
+            <div class="row g-3">
+                {% for image in car.images.all %}
+                <div class="col-sm-6 col-md-4">
+                    <div class="border rounded p-2 h-100">
+                        <img src="{{ image.image.url }}" alt="{{ car.brand }} {{ car.model }}" class="img-fluid rounded mb-2">
+                        {% if image.is_primary %}
+                        <span class="badge bg-success mb-2">Primary</span>
+                        {% endif %}
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="delete_images" value="{{ image.id }}" id="delete-image-{{ image.id }}">
+                            <label class="form-check-label" for="delete-image-{{ image.id }}">Delete image</label>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="col-12">
+            <label class="form-label">{% if car %}Add More Images{% else %}Car Images{% endif %}</label>
+            <input type="file" name="image" class="form-control" multiple accept="image/*">
+        </div>
+        
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary">{% if car %}Update{% else %}Add{% endif %} Car</button>
+            <a href="{% url 'dealer_dashboard' %}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% block title %}{{ dealer.shop_name }} - Khpal Buner{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="d-flex align-items-center gap-3 mb-4">
+                {% if dealer.profile_picture %}
+                <img src="{{ dealer.profile_picture.url }}" alt="{{ dealer.shop_name }}" class="rounded-circle object-fit-cover" style="width: 112px; height: 112px;">
+                {% else %}
+                <div class="rounded-circle bg-light d-flex align-items-center justify-content-center flex-shrink-0" style="width: 112px; height: 112px;">
+                    <i class="fas fa-store text-muted fa-3x"></i>
+                </div>
+                {% endif %}
+                <div>
+                    <h2 class="mb-1">{{ dealer.shop_name }}</h2>
+                    <p class="lead mb-0">Owner: {{ dealer.owner_name }}</p>
+                    {% if can_manage_profile %}
+                    <a href="{% url 'dealer_profile' %}" class="btn btn-sm btn-primary mt-2"><i class="fas fa-edit"></i> Edit Profile</a>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <ul class="list-group">
+                        <li class="list-group-item"><i class="fas fa-map-marker-alt"></i> {{ dealer.address }}</li>
+                        <li class="list-group-item"><i class="fas fa-city"></i> {{ dealer.city.name }}</li>
+                        <li class="list-group-item"><i class="fas fa-phone"></i> {{ dealer.phone }}</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    {% if dealer.whatsapp %}
+                    <a href="https://wa.me/{{ dealer.whatsapp }}" class="btn btn-success btn-lg w-100 mb-2"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+                    {% endif %}
+                    <a href="tel:{{ dealer.phone }}" class="btn btn-primary btn-lg w-100"><i class="fas fa-phone"></i> Call Now</a>
+                </div>
+            </div>
+
+            <h4>Cars Available</h4>
+            <div class="row g-3">
+                {% for car in cars %}
+                <div class="col-md-6">
+                    <div class="card">
+                        {% if car.images.first %}
+                        <img src="{{ car.images.first.image.url }}" class="card-img-top" alt="{{ car.brand }}">
+                        {% endif %}
+                        <div class="card-body">
+                            <h6 class="card-title">{{ car.year }} {{ car.brand }} {{ car.model }}</h6>
+                            {% if car.is_sold %}
+                            <span class="badge bg-danger mb-2">Sold</span>
+                            {% endif %}
+                            <p class="card-text text-success fw-bold">PKR {{ car.price|intcomma }}</p>
+                            <a href="{{ car.get_absolute_url }}" class="btn btn-sm btn-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <p>No cars available from this dealer.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            {% if dealer.google_maps_link %}
+            <h4>Location</h4>
+            <a href="{{ dealer.google_maps_link }}" target="_blank" class="text-decoration-none">
+                <div class="ratio ratio-16x9 mb-4">
+                    <iframe src="{{ dealer.get_google_maps_embed_url }}" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

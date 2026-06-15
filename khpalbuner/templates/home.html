@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% block title %}Khpal Buner - Find Your Dream Car{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section py-5" style="background: linear-gradient(135deg, #0F8A5F 0%, #0d7a52 100%);">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center text-white">
+                <h1 class="display-3 fw-bold mb-3">Find Your Dream Car</h1>
+                <p class="lead mb-4">Find Cars From Multiple Dealers in One Place</p>
+                <form method="get" action="{% url 'car_list' %}" class="search-form">
+                    <div class="input-group input-group-lg mb-3">
+                        <input type="text" name="q" class="form-control" placeholder="Search by brand, model, year, color...">
+                        <button class="btn btn-warning" type="submit">Search</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Filters Section -->
+<section class="py-4 bg-light">
+    <div class="container">
+        <form method="get" action="{% url 'car_list' %}" class="row g-3">
+            <div class="col-md-2">{{ search_form.brand }}</div>
+            <div class="col-md-2">{{ search_form.model }}</div>
+            <div class="col-md-2">{{ search_form.year }}</div>
+            <div class="col-md-2">{{ search_form.color }}</div>
+            <div class="col-md-2">{{ search_form.city }}</div>
+            <div class="col-md-2">{{ search_form.fuel_type }}</div>
+            <div class="col-md-2">{{ search_form.transmission }}</div>
+            <div class="col-md-2">{{ search_form.min_price }}</div>
+            <div class="col-md-2">{{ search_form.max_price }}</div>
+            <div class="col-md-2">
+                <button class="btn btn-primary w-100" type="submit">Filter</button>
+            </div>
+            <div class="col-md-2">
+                <a href="{% url 'car_list' %}" class="btn btn-secondary w-100">Reset</a>
+            </div>
+        </form>
+    </div>
+</section>
+
+<!-- Statistics -->
+<section class="py-4 bg-white">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-4">
+                <h3 class="text-success">{{ total_cars }}+</h3>
+                <p class="text-muted">Total Cars</p>
+            </div>
+            <div class="col-md-4">
+                <h3 class="text-success">{{ total_dealers }}+</h3>
+                <p class="text-muted">Verified Dealers</p>
+            </div>
+            <div class="col-md-4">
+                <h3 class="text-success">{{ total_cities }}+</h3>
+                <p class="text-muted">Cities</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% if featured_cars %}
+<!-- Featured Cars -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="mb-4">Featured Cars</h2>
+        <div class="row g-4">
+            {% for car in featured_cars %}
+            <div class="col-md-4 col-lg-2-4">
+                <div class="card h-100 car-card" data-car-url="{{ car.get_absolute_url }}">
+                    <img src="{% if car.images.first %}{{ car.images.first.image.url }}{% else %}{% static 'img/no-image.jpg' %}{% endif %}" class="card-img-top" alt="{{ car.brand }} {{ car.model }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ car.year }} {{ car.brand }} {{ car.model }}</h5>
+                        {% if car.is_sold %}
+                        <span class="badge bg-danger mb-2">Sold</span>
+                        {% endif %}
+                        <p class="card-text text-success fw-bold">PKR {{ car.price|intcomma }}</p>
+                        <p class="card-text small text-muted">{{ car.city.name }}</p>
+                        <a href="{{ car.get_absolute_url }}" class="btn btn-sm btn-primary">View Details</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Latest Cars -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="mb-4">Latest Cars</h2>
+        <div class="row g-4">
+            {% for car in latest_cars %}
+            <div class="col-md-4">
+                <div class="card h-100 car-card" data-car-url="{{ car.get_absolute_url }}">
+                    <img src="{% if car.images.first %}{{ car.images.first.image.url }}{% else %}{% static 'img/no-image.jpg' %}{% endif %}" class="card-img-top" alt="{{ car.brand }} {{ car.model }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ car.year }} {{ car.brand }} {{ car.model }}</h5>
+                        {% if car.is_sold %}
+                        <span class="badge bg-danger mb-2">Sold</span>
+                        {% endif %}
+                        <p class="card-text text-success fw-bold">PKR {{ car.price|intcomma }}</p>
+                        <p class="card-text small text-muted">{{ car.city.name }}</p>
+                        <p class="card-text small">{{ car.dealer.shop_name }}</p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="{{ car.get_absolute_url }}" class="btn btn-primary btn-sm">View Details</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Top Dealers -->
+{% if top_dealers %}
+<section class="py-5">
+    <div class="container">
+        <h2 class="mb-4">Top Dealers</h2>
+        <div class="row g-4">
+            {% for dealer in top_dealers %}
+            <div class="col-md-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        {% if dealer.profile_picture %}
+                        <img src="{{ dealer.profile_picture.url }}" alt="{{ dealer.shop_name }}" class="rounded-circle object-fit-cover mb-3" style="width: 88px; height: 88px;">
+                        {% else %}
+                        <div class="rounded-circle bg-light d-inline-flex align-items-center justify-content-center mb-3" style="width: 88px; height: 88px;">
+                            <i class="fas fa-store text-muted fa-2x"></i>
+                        </div>
+                        {% endif %}
+                        <h5 class="card-title">{{ dealer.shop_name }}</h5>
+                        <p class="card-text">{{ dealer.owner_name }}</p>
+                        <p class="card-text small text-muted">{{ dealer.city.name }}</p>
+                        <p class="card-text"><i class="fas fa-car"></i> {{ dealer.cars.count }} cars</p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="{{ dealer.get_absolute_url }}" class="btn btn-primary btn-sm">View Profile</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('.car-card').forEach(card => {
+    card.addEventListener('click', function(event) {
+        if (event.target.closest('a, button')) {
+            return;
+        }
+        window.location.href = this.dataset.carUrl;
+    });
+});
+</script>
+{% endblock %}

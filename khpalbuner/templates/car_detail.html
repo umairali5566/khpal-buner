@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% block title %}{{ car.year }} {{ car.brand }} {{ car.model }} - Khpal Buner{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Image Gallery -->
+            <div id="carGallery" class="carousel slide mb-4" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    {% for image in car.images.all %}
+                    <div class="carousel-item {% if image.is_primary or forloop.first %}active{% endif %}">
+                        <img src="{{ image.image.url }}" class="d-block w-100" alt="{{ car.brand }} {{ car.model }}">
+                    </div>
+                    {% empty %}
+                    <div class="carousel-item active">
+                        <img src="{% static 'img/no-image.jpg' %}" class="d-block w-100" alt="No image">
+                    </div>
+                    {% endfor %}
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#carGallery" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon"></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carGallery" data-bs-slide="next">
+                    <span class="carousel-control-next-icon"></span>
+                </button>
+            </div>
+
+            <!-- Car Details -->
+            <h2>{{ car.year }} {{ car.brand }} {{ car.model }}</h2>
+            {% if car.is_sold %}
+            <div class="alert alert-danger" role="alert">
+                This car has been sold{% if car.sold_at %} on {{ car.sold_at|date:"M d, Y H:i" }}{% endif %}.
+            </div>
+            {% endif %}
+            <p class="display-6 text-success mb-3">PKR {{ car.price|intcomma }}</p>
+            
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <ul class="list-group">
+                        <li class="list-group-item">Year: {{ car.year }}</li>
+                        <li class="list-group-item">Brand: {{ car.brand }}</li>
+                        <li class="list-group-item">Model: {{ car.model }}</li>
+                        <li class="list-group-item">Color: {{ car.color }}</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <ul class="list-group">
+                        <li class="list-group-item">Mileage: {{ car.mileage }} km</li>
+                        <li class="list-group-item">Fuel: {{ car.get_fuel_type_display }}</li>
+                        <li class="list-group-item">Transmission: {{ car.get_transmission_display }}</li>
+                        <li class="list-group-item">Location: {{ car.city.name }}</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h4>Description</h4>
+            <p>{{ car.description|linebreaks }}</p>
+
+            <!-- Google Map -->
+            {% if car.dealer.google_maps_link %}
+            <h4 class="mt-4">Dealer Location</h4>
+            <div class="ratio ratio-16x9">
+                <iframe src="{{ car.dealer.get_google_maps_embed_url }}" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card dealer-profile-card mb-4">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        {% if car.dealer.profile_picture %}
+                        <img src="{{ car.dealer.profile_picture.url }}" alt="{{ car.dealer.shop_name }}" class="dealer-avatar">
+                        {% else %}
+                        <div class="dealer-avatar dealer-avatar-placeholder">
+                            <i class="fas fa-store"></i>
+                        </div>
+                        {% endif %}
+                        <div class="flex-grow-1 min-w-0">
+                            <h5 class="mb-0 text-truncate">{{ car.dealer.shop_name }}</h5>
+                            <p class="text-muted small mb-1">Owner: {{ car.dealer.owner_name }}</p>
+                            <a href="{{ car.dealer.get_absolute_url }}" class="small text-decoration-none">View dealer profile</a>
+                        </div>
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <div class="dealer-detail">
+                                <i class="fas fa-phone"></i>
+                                <span>{{ car.dealer.phone }}</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="dealer-detail">
+                                <i class="fas fa-city"></i>
+                                <span>{{ car.dealer.city.name }}</span>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="dealer-detail">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>{{ car.dealer.address }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        {% if car.dealer.whatsapp %}
+                        <a href="https://wa.me/{{ car.dealer.whatsapp }}"
+                           class="btn btn-success btn-sm"
+                           data-analytics-click="whatsapp"
+                           data-analytics-url="{% url 'car_click_analytics' car.pk %}">
+                            <i class="fab fa-whatsapp"></i> WhatsApp
+                        </a>
+                        {% endif %}
+                        <a href="tel:{{ car.dealer.phone }}"
+                           class="btn btn-primary btn-sm"
+                           data-analytics-click="call"
+                           data-analytics-url="{% url 'car_click_analytics' car.pk %}">
+                            <i class="fas fa-phone"></i> Call Now
+                        </a>
+                        {% if car.dealer.google_maps_link %}
+                        <a href="{{ car.dealer.google_maps_link }}" target="_blank" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-map-marked-alt"></i> Open Map
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5>Send Inquiry</h5>
+                </div>
+                <div class="card-body">
+                    {% if car.is_sold %}
+                    <p class="mb-0 text-muted">This listing is sold, so inquiries are closed.</p>
+                    {% else %}
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ inquiry_form.name }}
+                        {{ inquiry_form.phone }}
+                        {{ inquiry_form.message }}
+                        <button type="submit" class="btn btn-primary w-100">Send Inquiry</button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

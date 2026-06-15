@@ -1,0 +1,203 @@
+:root {
+    --primary-color: #0F8A5F;
+    --secondary-color: #1a1a1a;
+    --light-color: #ffffff;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--secondary-color);
+}
+
+.navbar-brand {
+    font-weight: bold;
+    color: var(--light-color);
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background-color: #0d7a52;
+    border-color: #0d7a52;
+}
+
+.text-success {
+    color: var(--primary-color) !important;
+}
+
+.hero-section {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+}
+
+.card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
+
+.search-form .form-control {
+    border-radius: 0;
+}
+
+.search-form .btn {
+    border-radius: 0;
+}
+
+/* Card styling */
+.card {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border: none;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.car-card {
+    cursor: pointer;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Forms */
+.form-control, .form-select {
+    border-color: #ddd;
+    border-radius: 4px;
+    padding: 10px 15px;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(15, 138, 95, 0.25);
+}
+
+/* Buttons */
+.btn {
+    border-radius: 4px;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+    border-color: #218838;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+    border-color: #c82333;
+}
+
+/* Table */
+.table {
+    margin-bottom: 0;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(15, 138, 95, 0.05);
+}
+
+.table-striped tbody tr:hover {
+    background-color: rgba(15, 138, 95, 0.1);
+}
+
+/* Footer */
+footer {
+    margin-top: auto;
+}
+
+/* Utility */
+.text-muted {
+    color: #6c757d !important;
+}
+
+.badge {
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.dealer-profile-card {
+    border: 1px solid rgba(15, 138, 95, 0.12);
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.dealer-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex: 0 0 auto;
+    border: 3px solid rgba(15, 138, 95, 0.15);
+}
+
+.dealer-avatar-placeholder {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    flex: 0 0 auto;
+    border: 3px solid rgba(15, 138, 95, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8faf9;
+    color: var(--primary-color);
+}
+
+.dealer-detail {
+    background: #f8faf9;
+    border: 1px solid rgba(15, 138, 95, 0.1);
+    border-radius: 10px;
+    padding: 8px 10px;
+    font-size: 13px;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    min-height: 38px;
+}
+
+.dealer-detail i {
+    color: var(--primary-color);
+    width: 16px;
+    margin-top: 2px;
+}
+
+.dealer-detail span {
+    overflow-wrap: anywhere;
+}
+
+/* Responsive grid for featured cars */
+@media (min-width: 1200px) {
+    .col-lg-2-4 {
+        flex: 0 0 calc(20% - 1rem);
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-section {
+        min-height: 50vh;
+    }
+    
+    .card-img-top {
+        height: 150px;
+    }
+    
+    .col-lg-2-4 {
+        flex: 0 0 100%;
+    }
+}

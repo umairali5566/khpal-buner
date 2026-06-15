@@ -1,0 +1,102 @@
+{% load static %}
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Khpal Buner - Find Cars From Multiple Dealers in One Place{% endblock %}</title>
+    <meta name="description" content="{% block description %}Khpal Buner - Find cars from verified local dealers in one place. Search by brand, model, year, color, and location.{% endblock %}">
+    <meta property="og:title" content="{% block og_title %}Khpal Buner{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Find cars from verified local dealers in one place.{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}{% static 'img/og-image.jpg' %}{% endblock %}">
+    <meta property="og:type" content="website">
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #0F8A5F;">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <strong>Khpal Buner</strong>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'car_list' %}">Cars</a>
+                    </li>
+                    <li class="nav-item">
+                        {% if user.is_authenticated and user.dealer_profile %}
+                        <a class="nav-link" href="{% url 'dealer_detail' user.dealer_profile.pk %}">My Profile</a>
+                        {% else %}
+                        <a class="nav-link" href="{% url 'dealer_list' %}">Dealers</a>
+                        {% endif %}
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'contact' %}">Contact</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                {{ user.username }}
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{% url 'dealer_dashboard' %}">Dashboard</a></li>
+                                <li><a class="dropdown-item" href="{% url 'dealer_profile' %}">My Profile</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">Dealer Login</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        {% if messages %}
+            <div class="container mt-3">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Khpal Buner</h5>
+                    <p>Find Cars From Multiple Dealers in One Place</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="{% url 'contact' %}" class="text-white">Contact Us</a>
+                </div>
+            </div>
+            <hr>
+            <p class="mb-0">&copy; 2024 Khpal Buner. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

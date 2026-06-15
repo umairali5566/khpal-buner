@@ -1,0 +1,443 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% block title %}Dashboard - Khpal Buner{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="mb-4">Dealer Dashboard</h2>
+
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="text-muted small">Total Cars</div>
+                    <div class="h3 mb-0">{{ dashboard_stats.total_cars|intcomma }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="text-muted small">Available Cars</div>
+                    <div class="h3 mb-0 text-success">{{ dashboard_stats.available_cars|intcomma }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="text-muted small">Sold Cars</div>
+                    <div class="h3 mb-0 text-danger">{{ dashboard_stats.sold_cars|intcomma }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="text-muted small">Total Views</div>
+                    <div class="h3 mb-0">{{ dashboard_stats.total_car_views|intcomma }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="text-muted small">Total Car Searches</div>
+                    <div class="h4 mb-0">{{ dashboard_stats.total_car_searches|intcomma }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="text-muted small">Most Viewed Car</div>
+                    <div class="fw-semibold">
+                        {% if dashboard_stats.most_viewed_car %}
+                        {{ dashboard_stats.most_viewed_car.year }} {{ dashboard_stats.most_viewed_car.brand }} {{ dashboard_stats.most_viewed_car.model }}
+                        <span class="text-muted">({{ dashboard_stats.most_viewed_car.total_views|intcomma }})</span>
+                        {% else %}
+                        No views yet
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="text-muted small">Most Searched Car</div>
+                    <div class="fw-semibold">
+                        {% if dashboard_stats.most_searched_car %}
+                        {{ dashboard_stats.most_searched_car.year }} {{ dashboard_stats.most_searched_car.brand }} {{ dashboard_stats.most_searched_car.model }}
+                        <span class="text-muted">({{ dashboard_stats.most_searched_car.total_searches|intcomma }})</span>
+                        {% else %}
+                        No searches yet
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Profile</h5>
+                </div>
+                <div class="card-body">
+                    {% if dealer.profile_picture %}
+                    <img src="{{ dealer.profile_picture.url }}" alt="{{ dealer.shop_name }}" class="rounded-circle object-fit-cover mb-3" style="width: 96px; height: 96px;">
+                    {% else %}
+                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mb-3" style="width: 96px; height: 96px;">
+                        <i class="fas fa-store text-muted fa-2x"></i>
+                    </div>
+                    {% endif %}
+                    <h6>{{ dealer.shop_name }}</h6>
+                    <p>{{ dealer.owner_name }}</p>
+                    <p>{{ dealer.phone }}</p>
+                    <a href="{% url 'dealer_profile' %}" class="btn btn-sm btn-primary">Edit Profile</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4>Your Cars</h4>
+                <a href="{% url 'car_add' %}" class="btn btn-success"><i class="fas fa-plus"></i> Add New Car</a>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Car</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for car in cars %}
+                        <tr>
+                            <td>{{ car.year }} {{ car.brand }} {{ car.model }}</td>
+                            <td>PKR {{ car.price|intcomma }}</td>
+                            <td>
+                                {% if car.is_sold %}
+                                <span class="badge bg-danger">Sold</span>
+                                {% if car.sold_at %}
+                                <div class="small text-muted mt-1">Sold {{ car.sold_at|date:"M d, Y H:i" }}</div>
+                                {% endif %}
+                                {% else %}
+                                <span class="badge bg-success">Available</span>
+                                {% endif %}
+                                {% if car.is_featured %}
+                                <span class="badge bg-warning">Featured</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ car.get_absolute_url }}" class="btn btn-sm btn-info"><i class="fas fa-eye"></i></a>
+                                <a href="{% url 'car_edit' car.pk %}" class="btn btn-sm btn-primary"><i class="fas fa-edit"></i></a>
+                                <a href="{% url 'car_delete' car.pk %}" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></a>
+                                {% if car.is_sold %}
+                                <form method="post" action="{% url 'car_mark_available' car.pk %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-warning">Mark Available</button>
+                                </form>
+                                {% else %}
+                                <form method="post" action="{% url 'car_mark_sold' car.pk %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-warning">Mark Sold</button>
+                                </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="4">No cars listed.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">Search Trends</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="searchTrendsChart" height="180"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">Customer Interest Metrics</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="performanceChart" height="180"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h4>Most Searched Cars</h4>
+    <div class="table-responsive mb-4">
+        <table class="table table-striped align-middle">
+            <thead>
+                <tr>
+                    <th>Car Name</th>
+                    <th>Total Search Count</th>
+                    <th>Last Search Date</th>
+                    <th>Search Trend Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for car in most_searched_cars %}
+                <tr>
+                    <td>
+                        {{ car.year }} {{ car.brand }} {{ car.model }}
+                        {% if car.total_searches >= high_demand_search_threshold %}
+                        <span class="badge bg-danger ms-2"><i class="fas fa-fire"></i> High Demand</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ car.total_searches|intcomma }}</td>
+                    <td>{{ car.last_search_date|date:"M d, Y H:i" }}</td>
+                    <td>
+                        {% if car.recent_searches > car.previous_searches %}
+                        <span class="badge bg-success">Rising</span>
+                        {% elif car.recent_searches == car.previous_searches %}
+                        <span class="badge bg-secondary">Steady</span>
+                        {% else %}
+                        <span class="badge bg-warning text-dark">Cooling</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4">No search activity yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <h4>Car Performance Analytics</h4>
+    <div class="table-responsive mb-4">
+        <table class="table table-striped align-middle">
+            <thead>
+                <tr>
+                    <th>Car Name</th>
+                    <th>Total Views</th>
+                    <th>Unique Visitors</th>
+                    <th>Detail Page Clicks</th>
+                    <th>WhatsApp Clicks</th>
+                    <th>Call Button Clicks</th>
+                    <th>Last Viewed Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for car in car_performance %}
+                <tr>
+                    <td>{{ car.year }} {{ car.brand }} {{ car.model }}</td>
+                    <td>{{ car.total_views|intcomma }}</td>
+                    <td>{{ car.unique_visitors|intcomma }}</td>
+                    <td>{{ car.detail_clicks|intcomma }}</td>
+                    <td>{{ car.whatsapp_clicks|intcomma }}</td>
+                    <td>{{ car.call_clicks|intcomma }}</td>
+                    <td>
+                        {% if car.last_viewed_date %}
+                        {{ car.last_viewed_date|date:"M d, Y H:i" }}
+                        {% else %}
+                        <span class="text-muted">No views yet</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7">No cars listed.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-lg-4">
+            <h5>Top 5 Most Viewed Cars</h5>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Car</th>
+                            <th>Views</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for car in top_viewed_cars %}
+                        <tr>
+                            <td>{{ car.year }} {{ car.brand }} {{ car.model }}</td>
+                            <td>{{ car.total_views|intcomma }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="2">No views yet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <h5>Top 5 Most Searched Cars</h5>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Car</th>
+                            <th>Searches</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for car in most_searched_cars %}
+                        <tr>
+                            <td>{{ car.year }} {{ car.brand }} {{ car.model }}</td>
+                            <td>{{ car.total_searches|intcomma }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="2">No searches yet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <h5>Top 5 Cars With Highest WhatsApp Interest</h5>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Car</th>
+                            <th>WhatsApp</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for car in top_whatsapp_cars %}
+                        <tr>
+                            <td>{{ car.year }} {{ car.brand }} {{ car.model }}</td>
+                            <td>{{ car.whatsapp_clicks|intcomma }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="2">No WhatsApp clicks yet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <h4>Inquiries</h4>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Car</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for inquiry in inquiries %}
+                <tr>
+                    <td>{{ inquiry.created_at|date:"M d, Y" }}</td>
+                    <td>{{ inquiry.name }}</td>
+                    <td>{{ inquiry.phone }}</td>
+                    <td>{{ inquiry.car.brand }} {{ inquiry.car.model }}</td>
+                    <td>
+                        {% if inquiry.is_read %}
+                        <span class="badge bg-success">Read</span>
+                        {% else %}
+                        <span class="badge bg-warning">New</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5">No inquiries yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{{ search_chart_labels|json_script:"search-chart-labels" }}
+{{ search_chart_counts|json_script:"search-chart-counts" }}
+{{ performance_chart_labels|json_script:"performance-chart-labels" }}
+{{ performance_view_counts|json_script:"performance-view-counts" }}
+{{ performance_whatsapp_counts|json_script:"performance-whatsapp-counts" }}
+{{ performance_call_counts|json_script:"performance-call-counts" }}
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchLabels = JSON.parse(document.getElementById('search-chart-labels').textContent);
+    const searchCounts = JSON.parse(document.getElementById('search-chart-counts').textContent);
+    const performanceLabels = JSON.parse(document.getElementById('performance-chart-labels').textContent);
+    const viewCounts = JSON.parse(document.getElementById('performance-view-counts').textContent);
+    const whatsappCounts = JSON.parse(document.getElementById('performance-whatsapp-counts').textContent);
+    const callCounts = JSON.parse(document.getElementById('performance-call-counts').textContent);
+
+    new Chart(document.getElementById('searchTrendsChart'), {
+        type: 'bar',
+        data: {
+            labels: searchLabels,
+            datasets: [{
+                label: 'Searches',
+                data: searchCounts,
+                backgroundColor: '#0F8A5F'
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+        }
+    });
+
+    new Chart(document.getElementById('performanceChart'), {
+        type: 'line',
+        data: {
+            labels: performanceLabels,
+            datasets: [
+                {
+                    label: 'Views',
+                    data: viewCounts,
+                    borderColor: '#0F8A5F',
+                    backgroundColor: 'rgba(15, 138, 95, 0.12)',
+                    tension: 0.25
+                },
+                {
+                    label: 'WhatsApp',
+                    data: whatsappCounts,
+                    borderColor: '#198754',
+                    backgroundColor: 'rgba(25, 135, 84, 0.12)',
+                    tension: 0.25
+                },
+                {
+                    label: 'Calls',
+                    data: callCounts,
+                    borderColor: '#0d6efd',
+                    backgroundColor: 'rgba(13, 110, 253, 0.12)',
+                    tension: 0.25
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+        }
+    });
+});
+</script>
+{% endblock %}

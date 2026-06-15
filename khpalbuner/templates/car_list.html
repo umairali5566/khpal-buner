@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% block title %}Cars - Khpal Buner{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="mb-4">Car Listings</h2>
+    
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <form method="get" class="row g-2">
+                <div class="col-md-3">{{ search_form.brand }}</div>
+                <div class="col-md-3">{{ search_form.model }}</div>
+                <div class="col-md-2">{{ search_form.year }}</div>
+                <div class="col-md-2">{{ search_form.color }}</div>
+                <div class="col-md-2">{{ search_form.city }}</div>
+                <div class="col-md-2">{{ search_form.fuel_type }}</div>
+                <div class="col-md-2">{{ search_form.transmission }}</div>
+                <div class="col-md-2">{{ search_form.min_price }}</div>
+                <div class="col-md-2">{{ search_form.max_price }}</div>
+                <div class="col-md-2">
+                    <button class="btn btn-primary w-100" type="submit">Filter</button>
+                </div>
+                <div class="col-md-2">
+                    <a href="{% url 'car_list' %}" class="btn btn-secondary w-100">Reset</a>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-4">
+            <div class="btn-group" role="group">
+                <button class="btn btn-outline-secondary active" data-view="grid"><i class="fas fa-th"></i></button>
+                <button class="btn btn-outline-secondary" data-view="list"><i class="fas fa-list"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {% for car in cars %}
+        <div class="col-md-4 car-item">
+            <div class="card h-100 car-card" data-car-url="{{ car.get_absolute_url }}">
+                {% if car.images.first %}
+                <img src="{{ car.images.first.image.url }}" class="card-img-top" alt="{{ car.brand }} {{ car.model }}">
+                {% else %}
+                <img src="{% static 'img/no-image.jpg' %}" class="card-img-top" alt="No image">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ car.year }} {{ car.brand }} {{ car.model }}</h5>
+                    {% if car.is_sold %}
+                    <span class="badge bg-danger mb-2">Sold</span>
+                    {% endif %}
+                    <p class="card-text text-success fw-bold">PKR {{ car.price|intcomma }}</p>
+                    <p class="card-text small text-muted">{{ car.city.name }}</p>
+                    <p class="card-text small">
+                        <a href="{{ car.dealer.get_absolute_url }}" class="text-decoration-none text-muted">
+                            <i class="fas fa-store"></i> {{ car.dealer.shop_name }}
+                        </a>
+                    </p>
+                </div>
+                <div class="card-footer">
+                    <a href="{{ car.get_absolute_url }}"
+                       class="btn btn-primary btn-sm"
+                       data-analytics-click="view_details"
+                       data-analytics-url="{% url 'car_click_analytics' car.pk %}">View Details</a>
+                    <button class="btn btn-outline-danger btn-sm favorite-btn" data-car-id="{{ car.id }}"><i class="far fa-heart"></i></button>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p>No cars found matching your criteria.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Favorite functionality
+document.querySelectorAll('.favorite-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const carId = this.dataset.carId;
+        let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+        if (!favorites.includes(carId)) {
+            favorites.push(carId);
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+            this.innerHTML = '<i class="fas fa-heart"></i>';
+        }
+    });
+});
+
+document.querySelectorAll('.car-card').forEach(card => {
+    card.addEventListener('click', function(event) {
+        if (event.target.closest('a, button')) {
+            return;
+        }
+        window.location.href = this.dataset.carUrl;
+    });
+});
+</script>
+{% endblock %}
