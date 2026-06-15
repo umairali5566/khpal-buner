@@ -49,7 +49,6 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.sitemaps',
     'django.contrib.humanize',
-    'sslserver',
     'cars.apps.CarsConfig',
 ]
 
