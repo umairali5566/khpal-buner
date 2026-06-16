@@ -70,11 +70,11 @@ class SearchForm(forms.Form):
     model = forms.CharField(required=False, widget=forms.TextInput(attrs={'placeholder': 'Model', 'class': 'form-control'}))
     year = forms.IntegerField(required=False, widget=forms.NumberInput(attrs={'placeholder': 'Year', 'class': 'form-control'}))
     color = forms.CharField(required=False, widget=forms.TextInput(attrs={'placeholder': 'Color', 'class': 'form-control'}))
-    city = forms.ModelChoiceField(queryset=City.objects.all(), required=False, empty_label='City', widget=forms.Select(attrs={'class': 'form-select'}))
+    city = forms.ModelChoiceField(queryset=City.objects.all(), required=False, empty_label='City', widget=forms.Select(attrs={'class': 'form-select', 'aria-label': 'City'}))
     min_price = forms.IntegerField(required=False, widget=forms.NumberInput(attrs={'placeholder': 'Min Price', 'class': 'form-control'}))
     max_price = forms.IntegerField(required=False, widget=forms.NumberInput(attrs={'placeholder': 'Max Price', 'class': 'form-control'}))
-    fuel_type = forms.ChoiceField(choices=[('', 'Fuel Type')] + Car.FUEL_CHOICES, required=False, widget=forms.Select(attrs={'class': 'form-select'}))
-    transmission = forms.ChoiceField(choices=[('', 'Transmission')] + Car.TRANSMISSION_CHOICES, required=False, widget=forms.Select(attrs={'class': 'form-select'}))
+    fuel_type = forms.ChoiceField(choices=[('', 'Fuel Type')] + Car.FUEL_CHOICES, required=False, widget=forms.Select(attrs={'class': 'form-select', 'aria-label': 'Fuel type'}))
+    transmission = forms.ChoiceField(choices=[('', 'Transmission')] + Car.TRANSMISSION_CHOICES, required=False, widget=forms.Select(attrs={'class': 'form-select', 'aria-label': 'Transmission'}))
 
 class ContactForm(forms.Form):
     name = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Your Name'}))

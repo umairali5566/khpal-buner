@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 import os
 from pathlib import Path
+from urllib.parse import parse_qsl, urlparse, unquote
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,6 +27,30 @@ def env_bool(name, default=False):
 
 def env_list(name, default=''):
     return [item.strip() for item in os.environ.get(name, default).split(',') if item.strip()]
+
+
+def postgres_database_from_url(database_url):
+    parsed_url = urlparse(database_url)
+
+    if parsed_url.scheme not in ('postgres', 'postgresql'):
+        raise ValueError('DATABASE_URL must start with postgres:// or postgresql://')
+
+    query_options = dict(parse_qsl(parsed_url.query))
+    sslmode = query_options.pop('sslmode', 'require')
+
+    return {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': unquote(parsed_url.path.lstrip('/')),
+        'USER': unquote(parsed_url.username or ''),
+        'PASSWORD': unquote(parsed_url.password or ''),
+        'HOST': parsed_url.hostname or '',
+        'PORT': str(parsed_url.port or ''),
+        'OPTIONS': {
+            'sslmode': sslmode,
+            **query_options,
+        },
+        'CONN_MAX_AGE': int(os.environ.get('DB_CONN_MAX_AGE', 600)),
+    }
 
 
 # SECURITY WARNING: set SECRET_KEY in production.
@@ -54,6 +79,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'khpalbuner.middleware.SecurityHeadersMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -65,7 +91,11 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'khpalbuner.urls'
 
-X_FRAME_OPTIONS = 'ALLOWALL'
+X_FRAME_OPTIONS = 'DENY'
+SECURE_HSTS_SECONDS = int(os.environ.get('SECURE_HSTS_SECONDS', 31536000))
+SECURE_HSTS_INCLUDE_SUBDOMAINS = env_bool('SECURE_HSTS_INCLUDE_SUBDOMAINS', True)
+SECURE_HSTS_PRELOAD = env_bool('SECURE_HSTS_PRELOAD', True)
+SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
 SECURE_CROSS_ORIGIN_EMBEDDER_POLICY = None
 
 TEMPLATES = [
@@ -89,14 +119,21 @@ WSGI_APPLICATION = 'khpalbuner.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+# Set DATABASE_URL to your Supabase Postgres connection string in production.
+# Example: postgresql://postgres.project-ref:password@aws-0-region.pooler.supabase.com:6543/postgres
+DATABASE_URL = os.environ.get('DATABASE_URL')
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if DATABASE_URL:
+    DATABASES = {
+        'default': postgres_database_from_url(DATABASE_URL),
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validation

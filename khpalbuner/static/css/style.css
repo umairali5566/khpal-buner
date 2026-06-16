@@ -1,5 +1,5 @@
 :root {
-    --primary-color: #0F8A5F;
+    --primary-color: #0B6F4B;
     --secondary-color: #1a1a1a;
     --light-color: #ffffff;
 }
@@ -26,6 +26,10 @@ body {
 
 .text-success {
     color: var(--primary-color) !important;
+}
+
+.stat-label {
+    color: #495057;
 }
 
 .hero-section {

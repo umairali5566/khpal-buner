@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="container py-5">
-    <h2 class="mb-4">Verified Dealers</h2>
+    <h1 class="h2 mb-4">Verified Dealers</h1>
     
     <div class="row g-4">
         {% for dealer in dealers %}
@@ -18,7 +18,7 @@
                         <i class="fas fa-store text-muted fa-2x"></i>
                     </div>
                     {% endif %}
-                    <h5 class="card-title">{{ dealer.shop_name }}</h5>
+                    <h2 class="h5 card-title">{{ dealer.shop_name }}</h2>
                     <p class="card-text">{{ dealer.owner_name }}</p>
                     <p class="card-text small text-muted">{{ dealer.address }}</p>
                     <p class="card-text small">{{ dealer.city.name }}</p>

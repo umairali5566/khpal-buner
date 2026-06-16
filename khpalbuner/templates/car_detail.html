@@ -20,16 +20,16 @@
                     </div>
                     {% endfor %}
                 </div>
-                <button class="carousel-control-prev" type="button" data-bs-target="#carGallery" data-bs-slide="prev">
+                <button class="carousel-control-prev" type="button" data-bs-target="#carGallery" data-bs-slide="prev" aria-label="Previous image">
                     <span class="carousel-control-prev-icon"></span>
                 </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#carGallery" data-bs-slide="next">
+                <button class="carousel-control-next" type="button" data-bs-target="#carGallery" data-bs-slide="next" aria-label="Next image">
                     <span class="carousel-control-next-icon"></span>
                 </button>
             </div>
 
             <!-- Car Details -->
-            <h2>{{ car.year }} {{ car.brand }} {{ car.model }}</h2>
+            <h1 class="h2">{{ car.year }} {{ car.brand }} {{ car.model }}</h1>
             {% if car.is_sold %}
             <div class="alert alert-danger" role="alert">
                 This car has been sold{% if car.sold_at %} on {{ car.sold_at|date:"M d, Y H:i" }}{% endif %}.
@@ -56,12 +56,12 @@
                 </div>
             </div>
 
-            <h4>Description</h4>
+            <h2 class="h4">Description</h2>
             <p>{{ car.description|linebreaks }}</p>
 
             <!-- Google Map -->
             {% if car.dealer.google_maps_link %}
-            <h4 class="mt-4">Dealer Location</h4>
+            <h2 class="h4 mt-4">Dealer Location</h2>
             <div class="ratio ratio-16x9">
                 <iframe src="{{ car.dealer.get_google_maps_embed_url }}" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
             </div>
@@ -80,7 +80,7 @@
                         </div>
                         {% endif %}
                         <div class="flex-grow-1 min-w-0">
-                            <h5 class="mb-0 text-truncate">{{ car.dealer.shop_name }}</h5>
+                            <h2 class="h5 mb-0 text-truncate">{{ car.dealer.shop_name }}</h2>
                             <p class="text-muted small mb-1">Owner: {{ car.dealer.owner_name }}</p>
                             <a href="{{ car.dealer.get_absolute_url }}" class="small text-decoration-none">View dealer profile</a>
                         </div>
@@ -133,7 +133,7 @@
 
             <div class="card">
                 <div class="card-header">
-                    <h5>Send Inquiry</h5>
+                    <h2 class="h5">Send Inquiry</h2>
                 </div>
                 <div class="card-body">
                     {% if car.is_sold %}

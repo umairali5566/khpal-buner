@@ -50,16 +50,16 @@
     <div class="container">
         <div class="row text-center">
             <div class="col-md-4">
-                <h3 class="text-success">{{ total_cars }}+</h3>
-                <p class="text-muted">Total Cars</p>
+                <p class="h2 text-success mb-0">{{ total_cars }}+</p>
+                <p class="stat-label">Total Cars</p>
             </div>
             <div class="col-md-4">
-                <h3 class="text-success">{{ total_dealers }}+</h3>
-                <p class="text-muted">Verified Dealers</p>
+                <p class="h2 text-success mb-0">{{ total_dealers }}+</p>
+                <p class="stat-label">Verified Dealers</p>
             </div>
             <div class="col-md-4">
-                <h3 class="text-success">{{ total_cities }}+</h3>
-                <p class="text-muted">Cities</p>
+                <p class="h2 text-success mb-0">{{ total_cities }}+</p>
+                <p class="stat-label">Cities</p>
             </div>
         </div>
     </div>
@@ -76,7 +76,7 @@
                 <div class="card h-100 car-card" data-car-url="{{ car.get_absolute_url }}">
                     <img src="{% if car.images.first %}{{ car.images.first.image.url }}{% else %}{% static 'img/no-image.jpg' %}{% endif %}" class="card-img-top" alt="{{ car.brand }} {{ car.model }}">
                     <div class="card-body">
-                        <h5 class="card-title">{{ car.year }} {{ car.brand }} {{ car.model }}</h5>
+                        <h3 class="h5 card-title">{{ car.year }} {{ car.brand }} {{ car.model }}</h3>
                         {% if car.is_sold %}
                         <span class="badge bg-danger mb-2">Sold</span>
                         {% endif %}
@@ -102,7 +102,7 @@
                 <div class="card h-100 car-card" data-car-url="{{ car.get_absolute_url }}">
                     <img src="{% if car.images.first %}{{ car.images.first.image.url }}{% else %}{% static 'img/no-image.jpg' %}{% endif %}" class="card-img-top" alt="{{ car.brand }} {{ car.model }}">
                     <div class="card-body">
-                        <h5 class="card-title">{{ car.year }} {{ car.brand }} {{ car.model }}</h5>
+                        <h3 class="h5 card-title">{{ car.year }} {{ car.brand }} {{ car.model }}</h3>
                         {% if car.is_sold %}
                         <span class="badge bg-danger mb-2">Sold</span>
                         {% endif %}
@@ -137,7 +137,7 @@
                             <i class="fas fa-store text-muted fa-2x"></i>
                         </div>
                         {% endif %}
-                        <h5 class="card-title">{{ dealer.shop_name }}</h5>
+                        <h3 class="h5 card-title">{{ dealer.shop_name }}</h3>
                         <p class="card-text">{{ dealer.owner_name }}</p>
                         <p class="card-text small text-muted">{{ dealer.city.name }}</p>
                         <p class="card-text"><i class="fas fa-car"></i> {{ dealer.cars.count }} cars</p>

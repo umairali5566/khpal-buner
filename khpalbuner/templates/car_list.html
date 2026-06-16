@@ -5,7 +5,7 @@
 
 {% block content %}
 <div class="container py-5">
-    <h2 class="mb-4">Car Listings</h2>
+    <h1 class="h2 mb-4">Car Listings</h1>
     
     <div class="row mb-4">
         <div class="col-md-8">
@@ -29,8 +29,8 @@
         </div>
         <div class="col-md-4">
             <div class="btn-group" role="group">
-                <button class="btn btn-outline-secondary active" data-view="grid"><i class="fas fa-th"></i></button>
-                <button class="btn btn-outline-secondary" data-view="list"><i class="fas fa-list"></i></button>
+                <button class="btn btn-outline-secondary active" data-view="grid" aria-label="Grid view"><i class="fas fa-th"></i></button>
+                <button class="btn btn-outline-secondary" data-view="list" aria-label="List view"><i class="fas fa-list"></i></button>
             </div>
         </div>
     </div>
@@ -45,7 +45,7 @@
                 <img src="{% static 'img/no-image.jpg' %}" class="card-img-top" alt="No image">
                 {% endif %}
                 <div class="card-body">
-                    <h5 class="card-title">{{ car.year }} {{ car.brand }} {{ car.model }}</h5>
+                    <h2 class="h5 card-title">{{ car.year }} {{ car.brand }} {{ car.model }}</h2>
                     {% if car.is_sold %}
                     <span class="badge bg-danger mb-2">Sold</span>
                     {% endif %}
@@ -62,7 +62,7 @@
                        class="btn btn-primary btn-sm"
                        data-analytics-click="view_details"
                        data-analytics-url="{% url 'car_click_analytics' car.pk %}">View Details</a>
-                    <button class="btn btn-outline-danger btn-sm favorite-btn" data-car-id="{{ car.id }}"><i class="far fa-heart"></i></button>
+                    <button class="btn btn-outline-danger btn-sm favorite-btn" data-car-id="{{ car.id }}" aria-label="Add {{ car.brand }} {{ car.model }} to favorites"><i class="far fa-heart"></i></button>
                 </div>
             </div>
         </div>
@@ -83,7 +83,11 @@ document.querySelectorAll('.favorite-btn').forEach(btn => {
         if (!favorites.includes(carId)) {
             favorites.push(carId);
             localStorage.setItem('favorites', JSON.stringify(favorites));
-            this.innerHTML = '<i class="fas fa-heart"></i>';
+            const icon = this.querySelector('i');
+            if (icon) {
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+            }
         }
     });
 });
