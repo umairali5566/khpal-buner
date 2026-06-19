@@ -148,9 +148,11 @@ def home(request):
         top_dealers = DealerProfile.objects.filter(is_suspended=False)[:6]
     cities = City.objects.all()[:10]
     
-    total_cars = Car.objects.available().count()
+    total_cars = Car.objects.count()
     total_dealers = DealerProfile.objects.filter(is_suspended=False).count()
     total_cities = City.objects.count()
+    cars_sold = Car.objects.filter(is_sold=True).count()
+    active_listings = Car.objects.available().count()
     
     search_form = SearchForm()
     
@@ -162,6 +164,8 @@ def home(request):
         'total_cars': total_cars,
         'total_dealers': total_dealers,
         'total_cities': total_cities,
+        'cars_sold': cars_sold,
+        'active_listings': active_listings,
         'search_form': search_form,
     }
     return render(request, 'home.html', context)
@@ -245,10 +249,19 @@ def car_detail(request, pk):
             inquiry.save()
             messages.success(request, 'Your inquiry has been sent to the dealer!')
             return redirect('car_detail', pk=pk)
+
+    similar_cars = (
+        Car.objects.visible_to_public()
+        .exclude(pk=car.pk)
+        .filter(Q(brand__iexact=car.brand) | Q(city=car.city))
+        .select_related('dealer', 'city')
+        .prefetch_related('images')[:3]
+    )
     
     context = {
         'car': car,
         'inquiry_form': inquiry_form,
+        'similar_cars': similar_cars,
     }
     return render(request, 'car_detail.html', context)
 
@@ -300,11 +313,17 @@ def dealer_detail(request, pk):
             pass
     
     cars = dealer.cars.all() if can_manage_profile else dealer.cars.visible_to_public()
+    total_views = CarView.objects.filter(car__dealer=dealer).count()
     
     context = {
         'dealer': dealer,
         'cars': cars,
         'can_manage_profile': can_manage_profile,
+        'dealer_stats': {
+            'total_cars': dealer.cars.count(),
+            'total_views': total_views,
+            'sold_cars': dealer.cars.filter(is_sold=True).count(),
+        },
     }
     return render(request, 'dealer_detail.html', context)
 

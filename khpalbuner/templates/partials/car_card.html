@@ -1,0 +1,46 @@
+{% load static %}
+{% load humanize %}
+
+<article class="card car-card h-100 fade-in" data-car-url="{{ car.get_absolute_url }}">
+    <div class="car-card-media">
+        <img src="{% if car.images.first %}{{ car.images.first.image.url }}{% else %}{% static 'img/no-image.jpg' %}{% endif %}" alt="{{ car.year }} {{ car.brand }} {{ car.model }}" loading="lazy">
+        <span class="price-badge">PKR {{ car.price|intcomma }}</span>
+        {% if car.is_sold %}
+        <span class="sold-badge">Sold</span>
+        {% endif %}
+    </div>
+    <div class="card-body">
+        <p class="car-brand">{{ car.brand }}</p>
+        <h3 class="car-title">{{ car.year }} {{ car.brand }} {{ car.model }}</h3>
+        <div class="car-spec-grid">
+            <span><i class="fas fa-calendar"></i> {{ car.year }}</span>
+            <span><i class="fas fa-road"></i> {{ car.mileage|intcomma }} km</span>
+            <span><i class="fas fa-gas-pump"></i> {{ car.get_fuel_type_display }}</span>
+            <span><i class="fas fa-gears"></i> {{ car.get_transmission_display }}</span>
+        </div>
+        <div class="car-meta">
+            <span><i class="fas fa-location-dot"></i> {% if car.city %}{{ car.city.name }}{% else %}Buner{% endif %}</span>
+            <a href="{{ car.dealer.get_absolute_url }}"><i class="fas fa-store"></i> {{ car.dealer.shop_name }}</a>
+        </div>
+    </div>
+    <div class="card-footer car-actions">
+        <a href="{{ car.get_absolute_url }}"
+           class="btn btn-primary"
+           data-analytics-click="view_details"
+           data-analytics-url="{% url 'car_click_analytics' car.pk %}">
+            View Details
+        </a>
+        {% if car.dealer.whatsapp %}
+        <a href="https://wa.me/{{ car.dealer.whatsapp }}"
+           class="btn btn-whatsapp"
+           data-analytics-click="whatsapp"
+           data-analytics-url="{% url 'car_click_analytics' car.pk %}">
+            <i class="fab fa-whatsapp"></i> WhatsApp Dealer
+        </a>
+        {% else %}
+        <a href="tel:{{ car.dealer.phone }}" class="btn btn-outline-primary">
+            <i class="fas fa-phone"></i> Call Dealer
+        </a>
+        {% endif %}
+    </div>
+</article>

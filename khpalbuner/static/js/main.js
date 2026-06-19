@@ -89,6 +89,15 @@ document.addEventListener('DOMContentLoaded', function() {
             trackAnalyticsClick(this);
         });
     });
+
+    document.querySelectorAll('.car-card[data-car-url]').forEach(card => {
+        card.addEventListener('click', function(event) {
+            if (event.target.closest('a, button')) {
+                return;
+            }
+            window.location.href = this.dataset.carUrl;
+        });
+    });
 });
 
 // Add smooth scrolling

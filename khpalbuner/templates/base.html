@@ -5,8 +5,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Khpal Buner - Find Cars From Multiple Dealers in One Place{% endblock %}</title>
-    <meta name="description" content="{% block description %}Khpal Buner - Find cars from verified local dealers in one place. Search by brand, model, year, color, and location.{% endblock %}">
+    <title>{% block title %}Khpal Buner - Buner's Trusted Car Marketplace{% endblock %}</title>
+    <meta name="description" content="{% block description %}Khpal Buner is Buner's trusted car marketplace for browsing cars from local dealers and connecting directly with sellers.{% endblock %}">
     <meta property="og:title" content="{% block og_title %}Khpal Buner{% endblock %}">
     <meta property="og:description" content="{% block og_description %}Find cars from verified local dealers in one place.{% endblock %}">
     <meta property="og:image" content="{% block og_image %}{% static 'img/og-image.jpg' %}{% endblock %}">
@@ -18,16 +18,23 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #0F8A5F;">
+    <nav class="navbar navbar-expand-lg navbar-dark marketplace-navbar sticky-top">
         <div class="container">
-            <a class="navbar-brand" href="{% url 'home' %}">
-                <strong>Khpal Buner</strong>
+            <a class="navbar-brand brand-lockup" href="{% url 'home' %}" aria-label="Khpal Buner home">
+                <span class="brand-mark"><i class="fas fa-car-side"></i></span>
+                <span>
+                    <strong>Khpal Buner</strong>
+                    <small>Buner's Trusted Car Marketplace</small>
+                </span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}">Home</a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'car_list' %}">Cars</a>
                     </li>
@@ -45,7 +52,7 @@
                 <ul class="navbar-nav">
                     {% if user.is_authenticated %}
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <a class="nav-link dropdown-toggle dealer-nav-link" href="#" role="button" data-bs-toggle="dropdown">
                                 {{ user.username }}
                             </a>
                             <ul class="dropdown-menu">
@@ -58,7 +65,9 @@
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'login' %}">Dealer Login</a>
+                            <a class="btn btn-primary navbar-login-btn" href="{% url 'login' %}">
+                                <i class="fas fa-user-tie"></i> Dealer Login
+                            </a>
                         </li>
                     {% endif %}
                 </ul>
@@ -80,19 +89,44 @@
         {% block content %}{% endblock %}
     </main>
 
-    <footer class="bg-dark text-white py-4 mt-5">
+    <footer class="site-footer">
         <div class="container">
-            <div class="row">
-                <div class="col-md-6">
-                    <p class="h5">Khpal Buner</p>
-                    <p>Find Cars From Multiple Dealers in One Place</p>
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="footer-brand">
+                        <span class="brand-mark"><i class="fas fa-car-side"></i></span>
+                        <span>
+                            <strong>Khpal Buner</strong>
+                            <small>Buner's Trusted Car Marketplace</small>
+                        </span>
+                    </div>
+                    <p class="footer-copy">A professional local marketplace helping buyers browse cars from trusted dealers across Buner and connect directly with sellers.</p>
                 </div>
-                <div class="col-md-6 text-md-end">
-                    <a href="{% url 'contact' %}" class="text-white">Contact Us</a>
+                <div class="col-6 col-lg-2">
+                    <p class="footer-title">Quick Links</p>
+                    <a href="{% url 'home' %}">Home</a>
+                    <a href="{% url 'car_list' %}">Cars</a>
+                    <a href="{% url 'dealer_list' %}">Dealers</a>
+                    <a href="{% url 'contact' %}">Contact</a>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <p class="footer-title">Contact</p>
+                    <p><i class="fas fa-location-dot"></i> Buner, Khyber Pakhtunkhwa</p>
+                    <p><i class="fas fa-phone"></i> Contact trusted local dealers</p>
+                    <p><i class="fas fa-envelope"></i> Khpal Buner support</p>
+                </div>
+                <div class="col-lg-3">
+                    <p class="footer-title">Social</p>
+                    <div class="footer-social">
+                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    </div>
                 </div>
             </div>
-            <hr>
-            <p class="mb-0">&copy; 2024 Khpal Buner. All rights reserved.</p>
+            <div class="footer-bottom">
+                <p class="mb-0">&copy; 2026 Khpal Buner. All rights reserved.</p>
+            </div>
         </div>
     </footer>
 

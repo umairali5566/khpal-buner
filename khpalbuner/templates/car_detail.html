@@ -4,11 +4,25 @@
 {% block title %}{{ car.year }} {{ car.brand }} {{ car.model }} - Khpal Buner{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="row">
+<div class="container market-page">
+    <div class="detail-header">
+        <div>
+            <p class="eyebrow">Car Details</p>
+            <h1>{{ car.year }} {{ car.brand }} {{ car.model }}</h1>
+            <p><i class="fas fa-location-dot"></i> {% if car.city %}{{ car.city.name }}{% else %}Buner{% endif %} <span>Listed by {{ car.dealer.shop_name }}</span></p>
+        </div>
+        <div class="detail-price">PKR {{ car.price|intcomma }}</div>
+    </div>
+
+    {% if car.is_sold %}
+    <div class="alert alert-danger premium-alert" role="alert">
+        This car has been sold{% if car.sold_at %} on {{ car.sold_at|date:"M d, Y H:i" }}{% endif %}.
+    </div>
+    {% endif %}
+
+    <div class="row g-4">
         <div class="col-lg-8">
-            <!-- Image Gallery -->
-            <div id="carGallery" class="carousel slide mb-4" data-bs-ride="carousel">
+            <div id="carGallery" class="carousel slide car-gallery mb-4" data-bs-ride="carousel">
                 <div class="carousel-inner">
                     {% for image in car.images.all %}
                     <div class="carousel-item {% if image.is_primary or forloop.first %}active{% endif %}">
@@ -28,49 +42,55 @@
                 </button>
             </div>
 
-            <!-- Car Details -->
-            <h1 class="h2">{{ car.year }} {{ car.brand }} {{ car.model }}</h1>
-            {% if car.is_sold %}
-            <div class="alert alert-danger" role="alert">
-                This car has been sold{% if car.sold_at %} on {{ car.sold_at|date:"M d, Y H:i" }}{% endif %}.
-            </div>
-            {% endif %}
-            <p class="display-6 text-success mb-3">PKR {{ car.price|intcomma }}</p>
-            
-            <div class="row mb-4">
-                <div class="col-md-6">
-                    <ul class="list-group">
-                        <li class="list-group-item">Year: {{ car.year }}</li>
-                        <li class="list-group-item">Brand: {{ car.brand }}</li>
-                        <li class="list-group-item">Model: {{ car.model }}</li>
-                        <li class="list-group-item">Color: {{ car.color }}</li>
-                    </ul>
+            <div class="content-panel">
+                <div class="section-heading compact">
+                    <div>
+                        <p class="eyebrow">Specifications</p>
+                        <h2>Vehicle Overview</h2>
+                    </div>
                 </div>
-                <div class="col-md-6">
-                    <ul class="list-group">
-                        <li class="list-group-item">Mileage: {{ car.mileage }} km</li>
-                        <li class="list-group-item">Fuel: {{ car.get_fuel_type_display }}</li>
-                        <li class="list-group-item">Transmission: {{ car.get_transmission_display }}</li>
-                        <li class="list-group-item">Location: {{ car.city.name }}</li>
-                    </ul>
+                <div class="spec-table">
+                    <div><span>Year</span><strong>{{ car.year }}</strong></div>
+                    <div><span>Brand</span><strong>{{ car.brand }}</strong></div>
+                    <div><span>Model</span><strong>{{ car.model }}</strong></div>
+                    <div><span>Color</span><strong>{{ car.color }}</strong></div>
+                    <div><span>Mileage</span><strong>{{ car.mileage|intcomma }} km</strong></div>
+                    <div><span>Fuel Type</span><strong>{{ car.get_fuel_type_display }}</strong></div>
+                    <div><span>Transmission</span><strong>{{ car.get_transmission_display }}</strong></div>
+                    <div><span>City</span><strong>{% if car.city %}{{ car.city.name }}{% else %}Buner{% endif %}</strong></div>
                 </div>
             </div>
 
-            <h2 class="h4">Description</h2>
-            <p>{{ car.description|linebreaks }}</p>
+            <div class="content-panel">
+                <div class="section-heading compact">
+                    <div>
+                        <p class="eyebrow">Description</p>
+                        <h2>Seller Notes</h2>
+                    </div>
+                </div>
+                <div class="description-copy">{{ car.description|linebreaks }}</div>
+            </div>
 
-            <!-- Google Map -->
             {% if car.dealer.google_maps_link %}
-            <h2 class="h4 mt-4">Dealer Location</h2>
-            <div class="ratio ratio-16x9">
-                <iframe src="{{ car.dealer.get_google_maps_embed_url }}" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            <div class="content-panel">
+                <div class="section-heading compact">
+                    <div>
+                        <p class="eyebrow">Location</p>
+                        <h2>Dealer Location</h2>
+                    </div>
+                </div>
+                <div class="ratio ratio-16x9 map-frame">
+                    <iframe src="{{ car.dealer.get_google_maps_embed_url }}" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
             </div>
             {% endif %}
         </div>
 
         <div class="col-lg-4">
-            <div class="card dealer-profile-card mb-4">
-                <div class="card-body p-3">
+            <aside class="sticky-sidebar">
+                <div class="dealer-profile-card mb-4">
+                    <div class="card-body p-4">
+                        <span class="verified-badge mb-3"><i class="fas fa-circle-check"></i> Verified Dealer</span>
                     <div class="d-flex align-items-center gap-3 mb-3">
                         {% if car.dealer.profile_picture %}
                         <img src="{{ car.dealer.profile_picture.url }}" alt="{{ car.dealer.shop_name }}" class="dealer-avatar">
@@ -110,20 +130,20 @@
                     <div class="d-grid gap-2">
                         {% if car.dealer.whatsapp %}
                         <a href="https://wa.me/{{ car.dealer.whatsapp }}"
-                           class="btn btn-success btn-sm"
+                           class="btn btn-whatsapp"
                            data-analytics-click="whatsapp"
                            data-analytics-url="{% url 'car_click_analytics' car.pk %}">
-                            <i class="fab fa-whatsapp"></i> WhatsApp
+                            <i class="fab fa-whatsapp"></i> WhatsApp Dealer
                         </a>
                         {% endif %}
                         <a href="tel:{{ car.dealer.phone }}"
-                           class="btn btn-primary btn-sm"
+                           class="btn btn-primary"
                            data-analytics-click="call"
                            data-analytics-url="{% url 'car_click_analytics' car.pk %}">
-                            <i class="fas fa-phone"></i> Call Now
+                            <i class="fas fa-phone"></i> Call Dealer
                         </a>
                         {% if car.dealer.google_maps_link %}
-                        <a href="{{ car.dealer.google_maps_link }}" target="_blank" class="btn btn-outline-primary btn-sm">
+                        <a href="{{ car.dealer.google_maps_link }}" target="_blank" class="btn btn-outline-primary">
                             <i class="fas fa-map-marked-alt"></i> Open Map
                         </a>
                         {% endif %}
@@ -131,11 +151,8 @@
                 </div>
             </div>
 
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="h5">Send Inquiry</h2>
-                </div>
-                <div class="card-body">
+                <div class="content-panel inquiry-panel">
+                    <h2>Send Inquiry</h2>
                     {% if car.is_sold %}
                     <p class="mb-0 text-muted">This listing is sold, so inquiries are closed.</p>
                     {% else %}
@@ -148,8 +165,26 @@
                     </form>
                     {% endif %}
                 </div>
-            </div>
+            </aside>
         </div>
     </div>
+
+    {% if similar_cars %}
+    <section class="market-section px-0 pb-0">
+        <div class="section-heading">
+            <div>
+                <p class="eyebrow">Similar Cars</p>
+                <h2>You may also like</h2>
+            </div>
+        </div>
+        <div class="row g-4">
+            {% for car in similar_cars %}
+            <div class="col-md-6 col-xl-4">
+                {% include 'partials/car_card.html' %}
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
 </div>
 {% endblock %}

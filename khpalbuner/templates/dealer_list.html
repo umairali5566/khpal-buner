@@ -3,37 +3,50 @@
 {% block title %}Dealers - Khpal Buner{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <h1 class="h2 mb-4">Verified Dealers</h1>
-    
+<section class="page-hero compact-hero">
+    <div class="container">
+        <p class="eyebrow">Trusted Network</p>
+        <h1>Verified Dealers</h1>
+        <p>Meet local car dealers serving buyers across Buner.</p>
+    </div>
+</section>
+
+<div class="container market-page">
     <div class="row g-4">
         {% for dealer in dealers %}
         <div class="col-md-4">
-            <div class="card h-100">
+            <article class="dealer-card h-100 fade-in">
                 <div class="card-body">
                     {% if dealer.profile_picture %}
-                    <img src="{{ dealer.profile_picture.url }}" alt="{{ dealer.shop_name }}" class="rounded-circle object-fit-cover mb-3" style="width: 88px; height: 88px;">
+                    <img src="{{ dealer.profile_picture.url }}" alt="{{ dealer.shop_name }}" class="dealer-card-avatar">
                     {% else %}
-                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mb-3" style="width: 88px; height: 88px;">
-                        <i class="fas fa-store text-muted fa-2x"></i>
+                    <div class="dealer-card-avatar dealer-avatar-placeholder">
+                        <i class="fas fa-store"></i>
                     </div>
                     {% endif %}
-                    <h2 class="h5 card-title">{{ dealer.shop_name }}</h2>
-                    <p class="card-text">{{ dealer.owner_name }}</p>
-                    <p class="card-text small text-muted">{{ dealer.address }}</p>
-                    <p class="card-text small">{{ dealer.city.name }}</p>
-                    <p class="card-text"><i class="fas fa-car"></i> {{ dealer.cars.all|length }} Cars</p>
+                    <span class="verified-badge"><i class="fas fa-circle-check"></i> Verified Dealer</span>
+                    <h2>{{ dealer.shop_name }}</h2>
+                    <p>{{ dealer.owner_name }}</p>
+                    <div class="dealer-card-meta">
+                        <span><i class="fas fa-location-dot"></i> {{ dealer.city.name }}</span>
+                        <span><i class="fas fa-car"></i> {{ dealer.cars.all|length }} Cars</span>
+                    </div>
+                    <p class="dealer-address">{{ dealer.address }}</p>
                 </div>
                 <div class="card-footer">
-                    <a href="{{ dealer.get_absolute_url }}" class="btn btn-primary btn-sm">View Profile</a>
+                    <a href="{{ dealer.get_absolute_url }}" class="btn btn-primary">View Profile</a>
                     {% if dealer.whatsapp %}
-                    <a href="https://wa.me/{{ dealer.whatsapp }}" class="btn btn-success btn-sm"><i class="fab fa-whatsapp"></i></a>
+                    <a href="https://wa.me/{{ dealer.whatsapp }}" class="btn btn-whatsapp"><i class="fab fa-whatsapp"></i></a>
                     {% endif %}
                 </div>
-            </div>
+            </article>
         </div>
         {% empty %}
-        <p>No dealers found.</p>
+        <div class="empty-state">
+            <i class="fas fa-store"></i>
+            <h2>No dealers found</h2>
+            <p>No verified dealer profiles are available yet.</p>
+        </div>
         {% endfor %}
     </div>
 </div>
