@@ -13,7 +13,7 @@ class Command(BaseCommand):
         password = os.environ.get("ADMIN_PASSWORD", "Admin123@786")
 
         if not username or not email or not password:
-            self.stdout.write("Admin env variables missing")
+            self.stdout.write("Admin env variables missing")    
             return
 
         if User.objects.filter(username=username).exists():

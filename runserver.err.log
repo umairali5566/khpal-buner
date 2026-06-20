@@ -1,0 +1,2 @@
+C:\Users\USER\AppData\Roaming\Python\Python314\site-packages\django\core\handlers\base.py:61: UserWarning: No directory at: C:\Users\USER\OneDrive\Desktop\bargin\staticfiles\
+  mw_instance = middleware(adapted_handler)
